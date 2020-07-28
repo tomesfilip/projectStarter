@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta 
+        http-equiv="Content-Security-Policy" 
+        content="script-src 'self' 'unsafe-inline'"
+    />
+    <link rel="stylesheet" href="./css/styles.css">
+    <title>Project Starter</title>
+</head>
+<body class="bg-primary text-center font-body">
+    <div class="bg-secondary text-tertiary p-6 m-4 rounded-twenty text-2xl uppercase">
+        <h4 class="font-heading">
+            Project Starter
+        </h4>
+    </div>
+    <div>
+        <form id="">
+            <div class="input path-input">
+                <input type="file" id="path" placeholder="select directory...">
+            </div>
+            <div class="input name-input">
+                <input type="text" id="name" placeholder="enter project name...">
+            </div>
+            <div class="">
+                <p>create github repo?</p>
+                <input type="checkbox" name="repo" id="repo">
+            </div>
+            <div>
+                <select name="project" id="project">
+                    <option value="base-web">base website</option>
+                    <option value="laravel-web">laravel website</option>
+                    <option value="flutter-app">flutter app</option>
+                    <option value="electron-app">electron app</option>
+                </select>
+            </div>
+            <button class="bg-secondary p-4 text-tertiary rounded-twenty font-medium mt-4">create</button>
+        </form>
+    </div>
+</body>
+</html> 
