@@ -7,6 +7,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "nodemon --exec electron .",
+    "build-css": "tailwindcss build src/styles.css -o app/css/styles.css",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . --overwrite --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=false --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"ProjectStarter\"",
     "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/icons/icon.png --prune=false --out=release-builds"
@@ -18,5 +19,7 @@
     "electron-packager": "^15.0.0",
     "nodemon": "^2.0.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "tailwindcss": "^1.5.2"
+  }
 }
