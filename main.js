@@ -25,7 +25,7 @@ function createMainWindow(){
 
   if (isDev){
     mainWindow.webContents.openDevTools()
-  }
+    }
 
   mainWindow.loadFile('./app/index.html')
 }

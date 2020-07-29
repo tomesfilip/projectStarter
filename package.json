@@ -20,6 +20,8 @@
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "@octokit/rest": "^18.0.3",
+    "dotenv": "^8.2.0",
     "tailwindcss": "^1.5.2"
   }
 }
