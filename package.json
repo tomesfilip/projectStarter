@@ -15,13 +15,13 @@
   "author": "Filip Tomes",
   "license": "MIT",
   "devDependencies": {
+    "dotenv": "^8.2.0",
     "electron": "^9.1.1",
     "electron-packager": "^15.0.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
     "@octokit/rest": "^18.0.3",
-    "dotenv": "^8.2.0",
     "tailwindcss": "^1.5.2"
   }
 }
