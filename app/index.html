@@ -10,33 +10,34 @@
     <title>Project Starter</title>
 </head>
 <body class="bg-primary text-center font-body">
-    <div class="bg-secondary text-tertiary p-6 m-4 rounded-twenty text-2xl uppercase">
-        <h4 class="font-heading">
+    <div class="bg-secondary text-tertiary p-6 m-4 mb-8 rounded-twenty text-2xl uppercase">
+        <h4 class="font-heading text-5xl">
             Project Starter
         </h4>
     </div>
     <div>
-        <form id="">
-            <div class="input path-input">
-                <input type="file" id="path" placeholder="select directory...">
+        <form id="project-form">
+            <div class="input path-input mb-4">
+                <input type="button" class="bg-primary border border-black rounded-twenty py-2 px-12 w-7/12 focus:outline-none cursor-pointer" value="select directory..." id="path-btn">
             </div>
-            <div class="input name-input">
-                <input type="text" id="name" placeholder="enter project name...">
+            <div class="input name-input mb-4">
+                <input class="bg-primary border border-black text-black py-2 px-12 rounded-twenty w-7/12 focus:outline-none placeholder-black" type="text" id="name" placeholder="enter project name">
             </div>
-            <div class="">
-                <p>create github repo?</p>
-                <input type="checkbox" name="repo" id="repo">
+            <div class="mb-4 flex justify-center">
+                <p class="mr-4">create github repo?</p>
+                <input class="cursor-pointer self-center" type="checkbox" name="repo" id="repo">
             </div>
             <div>
-                <select name="project" id="project">
+                <select  class="bg-primary border border-black text-black py-2 px-12 rounded-twenty leading-tight focus:outline-none w-7/12 cursor-pointer" name="project" id="project">
                     <option value="base-web">base website</option>
                     <option value="laravel-web">laravel website</option>
                     <option value="flutter-app">flutter app</option>
                     <option value="electron-app">electron app</option>
                 </select>
             </div>
-            <button class="bg-secondary p-4 text-tertiary rounded-twenty font-medium mt-4">create</button>
+            <input type="submit" class="bg-secondary px-6 py-8 text-tertiary text-2xl rounded-twenty font-medium mt-4 focus:outline-none cursor-pointer" value="create">
         </form>
     </div>
+    <script src="js/renderer.js"></script>
 </body>
 </html> 

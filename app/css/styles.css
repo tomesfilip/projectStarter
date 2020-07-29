@@ -18253,6 +18253,11 @@ video {
   transition-delay: 1000ms;
 }
 
+#repo{
+  height: 24px;
+  width: 24px;
+}
+
 @media (min-width: 640px){
   .sm\:container{
     width: 100%;
