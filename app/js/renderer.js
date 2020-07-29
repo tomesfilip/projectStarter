@@ -1,10 +1,13 @@
 
 require('dotenv/config')
 
+const path = require('path')
+const os = require('os')
+const fs = require('fs')
+
 const { ipcRenderer } = require('electron')
 const { dialog } = require('electron').remote
 const { Octokit } = require('@octokit/rest')
-
 
 let outputPath = document.querySelector('#path')
 const outputPathBtn = document.querySelector('#path-btn')
@@ -39,7 +42,15 @@ form.addEventListener('submit', (e) => {
     const projectName = nameInput.value.toString()
     const isRepo = gitRepo.checked
     const projectType = projectInput.value
-    console.log(outputPath, projectName, isRepo, projectType)
+    let dest = path.join(os.homedir(), projectName)
+
+    if(outputPath != undefined){
+        dest = path.join(outputPath, projectName)
+    }
+
+    fs.mkdirSync(dest, {}, err => {
+        if(err) throw err
+    })
 
     if(isRepo){
         octokit.repos.createForAuthenticatedUser({
