@@ -4,8 +4,9 @@ require('dotenv/config')
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
+const { exec } = require('child_process')
 
-const { ipcRenderer } = require('electron')
+// const { ipcRenderer, shell } = require('electron')
 const { dialog } = require('electron').remote
 const { Octokit } = require('@octokit/rest')
 
@@ -51,6 +52,23 @@ form.addEventListener('submit', (e) => {
     fs.mkdirSync(dest, {}, err => {
         if(err) throw err
     })
+
+    const isWin = os.platform() === 'win32' ? true : false
+    const cdCommand = isWin ? 'cd/' : 'cd'
+    const CodeCommand = `cd ${dest} && code .`
+
+
+    exec(`${cdCommand} && ${CodeCommand}`, (err, stdout, stderr) => {
+        if (err){
+            console.log(err.message)
+        }
+        if (stderr){
+            console.log(stderr)
+            return
+        }
+        console.log(stdout)
+    })
+    
 
     if(isRepo){
         octokit.repos.createForAuthenticatedUser({
