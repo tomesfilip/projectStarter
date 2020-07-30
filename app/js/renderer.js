@@ -42,23 +42,67 @@ form.addEventListener('submit', (e) => {
 
     const projectName = nameInput.value.toString()
     const isRepo = gitRepo.checked
-    const projectType = projectInput.value
+    const projectType = projectInput.value.toString()
     let dest = path.join(os.homedir(), projectName)
+    const isWin = os.platform() === 'win32' ? true : false
+    // commands
+    const cdCommand = isWin ? 'cd/' : 'cd'
+    const codeCommand = 'code .'
+    const npmInitCommand = 'npm init -y'
 
+    // getting the destination path for the main folder
     if(outputPath != undefined){
         dest = path.join(outputPath, projectName)
     }
 
-    fs.mkdirSync(dest, {}, err => {
-        if(err) throw err
+    const getToDirCommand = `cd ${dest}`
+
+    // creating the main folder
+    try {
+        if(!fs.existsSync(dest)){
+            fs.mkdirSync(dest)
+        }
+    } catch (err) {
+        console.log(err)
+    }
+
+
+    // basic npm init
+    exec(`${cdCommand} && ${getToDirCommand} && ${npmInitCommand}`, (err, stdout, stderr) => {
+        if (err){
+            console.log(err.message)
+        }
+        if (stderr){
+            console.log(stderr)
+            return
+        }
+        console.log(stdout)
     })
 
-    const isWin = os.platform() === 'win32' ? true : false
-    const cdCommand = isWin ? 'cd/' : 'cd'
-    const CodeCommand = `cd ${dest} && code .`
+    // project types
+    if (projectType === 'base-web'){
 
+        // folder structure
+        const publicFolder = path.join(dest, '/public')
+        const srcFolder = path.join(dest, '/src')
+        const imgFolder = path.join(dest, '/src/img')
+        const sassFolder = path.join(dest, '/src/sass')
+        const jsFolder = path.join(dest, '/src/js')
+        const outCssFolder = path.join(dest, '/public/css')
 
-    exec(`${cdCommand} && ${CodeCommand}`, (err, stdout, stderr) => {
+        const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
+        
+        // creating folder structure
+        for (i = 0; i < folders.length; i++) {
+            if(!fs.existsSync(folders[i])){
+                fs.mkdirSync(folders[i], {}, err => {
+                    if (err) throw err
+                })
+            }   
+        }
+    }
+
+    exec(`${cdCommand} && ${getToDirCommand} && ${codeCommand}`, (err, stdout, stderr) => {
         if (err){
             console.log(err.message)
         }
