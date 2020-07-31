@@ -9,6 +9,7 @@ const { exec } = require('child_process')
 // const { ipcRenderer, shell } = require('electron')
 const { dialog } = require('electron').remote
 const { Octokit } = require('@octokit/rest')
+const { stdout } = require('process')
 
 let outputPath = document.querySelector('#path')
 const outputPathBtn = document.querySelector('#path-btn')
@@ -79,20 +80,21 @@ form.addEventListener('submit', (e) => {
         console.log(stdout)
     })
 
-    // project types
-    if (projectType === 'base-web'){
 
-        // folder structure
-        const publicFolder = path.join(dest, '/public')
-        const srcFolder = path.join(dest, '/src')
-        const imgFolder = path.join(dest, '/src/img')
-        const sassFolder = path.join(dest, '/src/sass')
-        const jsFolder = path.join(dest, '/src/js')
-        const outCssFolder = path.join(dest, '/public/css')
+    // folder structure
+    const publicFolder = path.join(dest, '/public')
+    const srcFolder = path.join(dest, '/src')
+    const imgFolder = path.join(dest, '/src/img')
+    const sassFolder = path.join(dest, '/src/sass')
+    const jsFolder = path.join(dest, '/src/js')
+    const outCssFolder = path.join(dest, '/public/css')
+    const assestFolder = path.join(dest, '/assets')
 
-        const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
-        
-        // creating folder structure
+    // function for creating folder structure
+    function createFolderStructure(folders){
+        if (folders.length < 1){
+            console.log('cannot create folder structure with no folders')
+        } 
         for (i = 0; i < folders.length; i++) {
             if(!fs.existsSync(folders[i])){
                 fs.mkdirSync(folders[i], {}, err => {
@@ -100,6 +102,36 @@ form.addEventListener('submit', (e) => {
                 })
             }   
         }
+    }
+
+
+    // project types
+    if (projectType === 'base-web') {
+        const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
+        createFolderStructure(folders)
+        
+    }
+    else if (projectType === 'laravel-web') {
+        const createLarProjectCommand = `laravel new ${projectName}`
+
+        exec(createLarProjectCommand, (err, stdout, stderr) => {
+            if (err){
+                console.log(err.message)
+            }
+            if (stderr){
+                console.log(stderr)
+                return
+            }
+            console.log(stdout)
+        })
+    }
+    else if (projectType === 'flutter-app') {
+        console.log('Cannot make flutter app setup yet')
+    }
+    else if (projectType === 'electron-app') {
+        const iconsFolder = path.join(dest, '/assets/icons')
+        const folders = [srcFolder, assestFolder, iconsFolder]
+        createFolderStructure(folders)
     }
 
     exec(`${cdCommand} && ${getToDirCommand} && ${codeCommand}`, (err, stdout, stderr) => {
