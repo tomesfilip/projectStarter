@@ -5,6 +5,9 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const { exec } = require('child_process')
+const { promisify } = require('util')
+const sleep = promisify(setTimeout)
+
 
 // const { ipcRenderer, shell } = require('electron')
 const { dialog } = require('electron').remote
@@ -35,8 +38,6 @@ outputPathBtn.addEventListener('click', (e) => {
     }        
 })
 
-
-
 // on submit
 form.addEventListener('submit', (e) => {
     e.preventDefault()
@@ -59,14 +60,48 @@ form.addEventListener('submit', (e) => {
     const getToDirCommand = `cd ${dest}`
 
     // creating the main folder
-    try {
-        if(!fs.existsSync(dest)){
-            fs.mkdirSync(dest)
+    if(!isRepo){
+        try {
+            if(!fs.existsSync(dest)){
+                fs.mkdirSync(dest)
+            }
+        } catch (err) {
+            console.log(err)
         }
-    } catch (err) {
-        console.log(err)
-    }
+    } 
 
+    // creating github repo
+    function createRepository() {
+        if (isRepo) {
+            octokit.repos.createForAuthenticatedUser({
+                name: projectName,
+                auto_init: true,
+            })
+        }    
+    }    
+
+    // get github repo
+    function getRepository(){
+        const getRepoCommand = `git clone https://github.com/tomesfilip/${projectName}.git`
+            
+        exec(`${cdCommand} &&  ${getToDirCommand} && cd .. && ${getRepoCommand}`, (err, stdout, stderr) => {
+            if (err){
+                console.log(err.message)
+            }
+            if (stderr){
+                console.log(stderr)
+                return
+            }
+            console.log(stdout)
+        })
+    }
+    
+    if(isRepo){
+        createRepository()
+        sleep(2000).then(() => {
+            getRepository()
+        })
+    }
 
     // basic npm init
     exec(`${cdCommand} && ${getToDirCommand} && ${npmInitCommand}`, (err, stdout, stderr) => {
@@ -80,7 +115,6 @@ form.addEventListener('submit', (e) => {
         console.log(stdout)
     })
 
-
     // folder structure
     const publicFolder = path.join(dest, '/public')
     const srcFolder = path.join(dest, '/src')
@@ -91,19 +125,18 @@ form.addEventListener('submit', (e) => {
     const assestFolder = path.join(dest, '/assets')
 
     // function for creating folder structure
-    function createFolderStructure(folders){
-        if (folders.length < 1){
+    function createFolderStructure(folders) {
+        if (folders.length < 1) {
             console.log('cannot create folder structure with no folders')
         } 
         for (i = 0; i < folders.length; i++) {
-            if(!fs.existsSync(folders[i])){
+            if (!fs.existsSync(folders[i])) {
                 fs.mkdirSync(folders[i], {}, err => {
                     if (err) throw err
                 })
             }   
         }
     }
-
 
     // project types
     if (projectType === 'base-web') {
@@ -115,10 +148,10 @@ form.addEventListener('submit', (e) => {
         const createLarProjectCommand = `laravel new ${projectName}`
 
         exec(createLarProjectCommand, (err, stdout, stderr) => {
-            if (err){
+            if (err) {
                 console.log(err.message)
             }
-            if (stderr){
+            if (stderr) {
                 console.log(stderr)
                 return
             }
@@ -144,12 +177,4 @@ form.addEventListener('submit', (e) => {
         }
         console.log(stdout)
     })
-    
-
-    if(isRepo){
-        octokit.repos.createForAuthenticatedUser({
-            name: projectName,
-            auto_init: true,
-        })
-    }    
 })
