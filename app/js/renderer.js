@@ -5,8 +5,6 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const { exec } = require('child_process')
-const { promisify } = require('util')
-const sleep = promisify(setTimeout)
 
 
 // const { ipcRenderer, shell } = require('electron')
@@ -33,7 +31,7 @@ outputPathBtn.addEventListener('click', (e) => {
         properties: ['openDirectory']
     })
 
-    if(outputPath != undefined){
+    if (outputPath != undefined) {
         outputPath = outputPath.toString()
     }        
 })
@@ -45,7 +43,7 @@ form.addEventListener('submit', (e) => {
     const projectName = nameInput.value.toString()
     const isRepo = gitRepo.checked
     const projectType = projectInput.value.toString()
-    let dest = path.join(os.homedir(), projectName)
+    let dest = os.homedir()
     const isWin = os.platform() === 'win32' ? true : false
     // commands
     const cdCommand = isWin ? 'cd/' : 'cd'
@@ -53,76 +51,71 @@ form.addEventListener('submit', (e) => {
     const npmInitCommand = 'npm init -y'
 
     // getting the destination path for the main folder
-    if(outputPath != undefined){
-        dest = path.join(outputPath, projectName)
+    if (outputPath != undefined) {
+        dest = outputPath
     }
 
+    const projectPath = path.join(dest, projectName)
     const getToDirCommand = `cd ${dest}`
 
-    // creating the main folder
-    if(!isRepo){
-        try {
-            if(!fs.existsSync(dest)){
-                fs.mkdirSync(dest)
-            }
-        } catch (err) {
-            console.log(err)
-        }
-    } 
+        // folder structure
+        const publicFolder = path.join(projectPath, '/public')
+        const srcFolder = path.join(projectPath, '/src')
+        const imgFolder = path.join(projectPath, '/src/img')
+        const sassFolder = path.join(projectPath, '/src/sass')
+        const jsFolder = path.join(projectPath, '/src/js')
+        const outCssFolder = path.join(projectPath, '/public/css')
+        const assestFolder = path.join(projectPath, '/assets')
 
-    // creating github repo
     function createRepository() {
-        if (isRepo) {
-            octokit.repos.createForAuthenticatedUser({
-                name: projectName,
-                auto_init: true,
-            })
-        }    
-    }    
+        octokit.repos.createForAuthenticatedUser({
+            name: projectName,
+            auto_init: true,
+        })
+    }
 
     // get github repo
-    function getRepository(){
+    function getRepository() {
         const getRepoCommand = `git clone https://github.com/tomesfilip/${projectName}.git`
-            
-        exec(`${cdCommand} &&  ${getToDirCommand} && cd .. && ${getRepoCommand}`, (err, stdout, stderr) => {
-            if (err){
+        
+        exec(`${cdCommand} &&  ${getToDirCommand} && ${getRepoCommand}`, (err, stdout, stderr) => {
+            if (err) {
                 console.log(err.message)
             }
-            if (stderr){
+            if (stderr) {
                 console.log(stderr)
                 return
             }
             console.log(stdout)
         })
     }
-    
-    if(isRepo){
-        createRepository()
-        sleep(2000).then(() => {
-            getRepository()
+
+    function openVSCode() {
+        exec(`${cdCommand} && ${getToDirCommand} && cd ${projectName} && ${codeCommand}`, (err, stdout, stderr) => {
+            if (err) {
+                console.log(err.message)
+            }
+            if (stderr) {
+                console.log(stderr)
+                return
+            }
+            console.log(stdout)
         })
     }
 
     // basic npm init
-    exec(`${cdCommand} && ${getToDirCommand} && ${npmInitCommand}`, (err, stdout, stderr) => {
-        if (err){
-            console.log(err.message)
-        }
-        if (stderr){
-            console.log(stderr)
-            return
-        }
-        console.log(stdout)
-    })
-
-    // folder structure
-    const publicFolder = path.join(dest, '/public')
-    const srcFolder = path.join(dest, '/src')
-    const imgFolder = path.join(dest, '/src/img')
-    const sassFolder = path.join(dest, '/src/sass')
-    const jsFolder = path.join(dest, '/src/js')
-    const outCssFolder = path.join(dest, '/public/css')
-    const assestFolder = path.join(dest, '/assets')
+    function npmInit() {
+        exec(`${cdCommand} && ${getToDirCommand} && cd ${projectName} && ${npmInitCommand}`, (err, stdout, stderr) => {
+            if (err) {
+                console.log(err.message)
+            }
+            if (stderr) {
+                console.log(stderr)
+                return
+            }
+            console.log(stdout)
+        })
+    }
 
     // function for creating folder structure
     function createFolderStructure(folders) {
@@ -134,47 +127,63 @@ form.addEventListener('submit', (e) => {
                 fs.mkdirSync(folders[i], {}, err => {
                     if (err) throw err
                 })
-            }   
+            }  
         }
     }
 
-    // project types
-    if (projectType === 'base-web') {
-        const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
-        createFolderStructure(folders)
-        
-    }
-    else if (projectType === 'laravel-web') {
-        const createLarProjectCommand = `laravel new ${projectName}`
+    // function for creating folder structure inside main project folder
+    function makeFolderStructure() {
+        // project types
+        if (projectType === 'base-web') {
+            const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
+            createFolderStructure(folders)            
+        }
+        else if (projectType === 'laravel-web') {
+            const createLarProjectCommand = `laravel new ${projectName}`
 
-        exec(createLarProjectCommand, (err, stdout, stderr) => {
-            if (err) {
-                console.log(err.message)
+            exec(`${cdCommand} && ${getToDirCommand} && cd ${projectName} && ${createLarProjectCommand}`, (err, stdout, stderr) => {
+                if (err) {
+                    console.log(err.message)
+                }
+                if (stderr) {
+                    console.log(stderr)
+                    return
+                }
+                console.log(stdout)
+            })
+        }
+        else if (projectType === 'flutter-app') {
+            // copied from base web type
+            const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
+            createFolderStructure(folders)
+        }
+        else if (projectType === 'electron-app') {
+            const iconsFolder = path.join(projectPath, '/assets/icons')
+            const folders = [srcFolder, assestFolder, iconsFolder]
+            createFolderStructure(folders)
+        }
+    }
+
+    function createAll() {
+        try {
+            if (!fs.existsSync(projectPath)) {
+                fs.mkdirSync(projectPath)
             }
-            if (stderr) {
-                console.log(stderr)
-                return
-            }
-            console.log(stdout)
-        })
-    }
-    else if (projectType === 'flutter-app') {
-        console.log('Cannot make flutter app setup yet')
-    }
-    else if (projectType === 'electron-app') {
-        const iconsFolder = path.join(dest, '/assets/icons')
-        const folders = [srcFolder, assestFolder, iconsFolder]
-        createFolderStructure(folders)
+        } catch (err) {
+            console.log(err)
+        }
+        npmInit()
+        makeFolderStructure()
+        openVSCode()
     }
 
-    exec(`${cdCommand} && ${getToDirCommand} && ${codeCommand}`, (err, stdout, stderr) => {
-        if (err){
-            console.log(err.message)
-        }
-        if (stderr){
-            console.log(stderr)
-            return
-        }
-        console.log(stdout)
-    })
+    function createAllRepo() {
+        createRepository()
+        setTimeout(getRepository, 1800)
+        setTimeout(npmInit, 1900)
+        setTimeout(makeFolderStructure, 1900)
+        setTimeout(openVSCode, 2000)
+    }
+
+    isRepo ? createAllRepo() : createAll()
 })
