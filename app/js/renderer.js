@@ -6,13 +6,12 @@ const os = require('os')
 const fs = require('fs')
 const { exec } = require('child_process')
 
-
 // const { ipcRenderer, shell } = require('electron')
 const { dialog } = require('electron').remote
 const { Octokit } = require('@octokit/rest')
 const { stdout } = require('process')
 
-let outputPath = document.querySelector('#path')
+let outputPath = ""
 const outputPathBtn = document.querySelector('#path-btn')
 const form = document.querySelector('#project-form')
 const gitRepo = document.querySelector('#repo')
@@ -33,7 +32,10 @@ outputPathBtn.addEventListener('click', (e) => {
 
     if (outputPath != undefined) {
         outputPath = outputPath.toString()
-    }        
+    }     
+    
+    outputPathBtn.value = outputPath
+    
 })
 
 // on submit
@@ -58,15 +60,16 @@ form.addEventListener('submit', (e) => {
     const projectPath = path.join(dest, projectName)
     const getToDirCommand = `cd ${dest}`
 
-        // folder structure
-        const publicFolder = path.join(projectPath, '/public')
-        const srcFolder = path.join(projectPath, '/src')
-        const imgFolder = path.join(projectPath, '/src/img')
-        const sassFolder = path.join(projectPath, '/src/sass')
-        const jsFolder = path.join(projectPath, '/src/js')
-        const outCssFolder = path.join(projectPath, '/public/css')
-        const assestFolder = path.join(projectPath, '/assets')
+    // folder structure
+    const publicFolder = path.join(projectPath, '/public')
+    const srcFolder = path.join(projectPath, '/src')
+    const imgFolder = path.join(projectPath, '/src/img')
+    const sassFolder = path.join(projectPath, '/src/sass')
+    const jsFolder = path.join(projectPath, '/src/js')
+    const outCssFolder = path.join(projectPath, '/public/css')
+    const assestFolder = path.join(projectPath, '/assets')
 
+    // create github repo
     function createRepository() {
         octokit.repos.createForAuthenticatedUser({
             name: projectName,
@@ -76,7 +79,7 @@ form.addEventListener('submit', (e) => {
 
     // get github repo
     function getRepository() {
-        const getRepoCommand = `git clone https://github.com/tomesfilip/${projectName}.git`
+        const getRepoCommand = `git clone https://github.com/${process.env.USERNAME}/${projectName}.git`
         
         exec(`${cdCommand} &&  ${getToDirCommand} && ${getRepoCommand}`, (err, stdout, stderr) => {
             if (err) {
@@ -117,8 +120,8 @@ form.addEventListener('submit', (e) => {
         })
     }
 
-    // function for creating folder structure
-    function createFolderStructure(folders) {
+    // function for creating folders
+    function makeFolders(folders) {
         if (folders.length < 1) {
             console.log('cannot create folder structure with no folders')
         } 
@@ -136,7 +139,7 @@ form.addEventListener('submit', (e) => {
         // project types
         if (projectType === 'base-web') {
             const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
-            createFolderStructure(folders)            
+            makeFolders(folders)            
         }
         else if (projectType === 'laravel-web') {
             const createLarProjectCommand = `laravel new ${projectName}`
@@ -155,12 +158,12 @@ form.addEventListener('submit', (e) => {
         else if (projectType === 'flutter-app') {
             // copied from base web type
             const folders = [publicFolder, srcFolder, imgFolder, sassFolder, jsFolder, outCssFolder]
-            createFolderStructure(folders)
+            makeFolders(folders)
         }
         else if (projectType === 'electron-app') {
             const iconsFolder = path.join(projectPath, '/assets/icons')
             const folders = [srcFolder, assestFolder, iconsFolder]
-            createFolderStructure(folders)
+            makeFolders(folders)
         }
     }
 
