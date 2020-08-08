@@ -4,20 +4,20 @@ const settingsBtn = document.querySelector('#settings-btn')
 const settingsForm = document.querySelector('#form-settings')
 const goBackBtn = document.querySelector('#go-back-btn')
 
-function toggleHidden() {
-    if (!formTab.classList.contains('hidden')) {
-        formTab.classList.add('hidden')
-        settingsTab.classList.remove('hidden')
+function toggleHidden(firstTab, secondTab) {
+    if (!firstTab.classList.contains('hidden')) {
+        firstTab.classList.add('hidden')
+        secondTab.classList.remove('hidden')
     }
     else {
-        settingsTab.classList.add('hidden')
-        formTab.classList.remove('hidden')
+        secondTab.classList.add('hidden')
+        firstTab.classList.remove('hidden')
     }
 }
 
 settingsBtn.addEventListener('click', (e) => {
     e.preventDefault()
-    toggleHidden()
+    toggleHidden(formTab, settingsTab)
 })
 
 goBackBtn.addEventListener('click', (e) => {
@@ -29,10 +29,18 @@ goBackBtn.addEventListener('click', (e) => {
 
     fs.writeFile('.env', data, (err) => {
         if (err) throw err
-        console.log('file has been saved')
     })    
 
-    toggleHidden()
+    toggleHidden(formTab, settingsTab)
+    showTab(infoTab)
+    if (gitName.length > 1 && gitToken.length > 10) {
+        infoText.innerHTML = `git name and git token were successfully saved.`
+    }
+    else {
+        infoText.innerHTML = 'git name or git token is too short'
+    }
+    setTimeout(hideInfoTab, 3000)
+    
 })
 
 

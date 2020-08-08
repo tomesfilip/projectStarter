@@ -17,10 +17,23 @@ const form = document.querySelector('#project-form')
 const gitRepo = document.querySelector('#repo')
 const nameInput = document.querySelector('#name')
 const projectInput = document.querySelector('#project')
+const infoTab = document.querySelector('#info-tab')
+const infoText = document.querySelector('#info-text')
 
 const octokit = new Octokit({
     auth: process.env.TOKEN,
 })
+
+// functions for showing and hiding info tab
+const showTab = (tab) => {
+    tab.classList.remove('hidden')
+}
+
+const hideInfoTab = () => {
+    if (!infoTab.classList.contains('hidden')) {
+        infoTab.classList.add('hidden')
+    }
+}
 
 // set output path for project
 outputPathBtn.addEventListener('click', (e) => {
@@ -175,12 +188,18 @@ form.addEventListener('submit', (e) => {
         } catch (err) {
             console.log(err)
         }
+        showTab(infoTab)
+        infoText.innerHTML = `creating ${projectType} in ${projectPath}`
+        setTimeout(hideInfoTab, 4000)
         npmInit()
         makeFolderStructure()
         openVSCode()
     }
 
     function createAllRepo() {
+        showTab(infoTab)
+        infoText.innerHTML = `creating git repository of ${projectType} in ${projectPath}`
+        setTimeout(hideInfoTab, 4000)
         createRepository()
         setTimeout(getRepository, 1800)
         setTimeout(npmInit, 1900)
