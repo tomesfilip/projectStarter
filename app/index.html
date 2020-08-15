@@ -15,10 +15,10 @@
             Project Starter
         </h4>
     </div>
-    <div id="form-tab">
+    <div id="form-tab" class="">
         <form id="project-form">
             <div class="input path-input mb-4">
-                <input type="button" class="bg-primary border border-black rounded-twenty py-2 w-7/12 focus:outline-none cursor-pointer" value="select directory..." id="path-btn">
+                <input type="button" class="bg-primary border border-black rounded-twenty p-2 w-7/12 focus:outline-none cursor-pointer" value="select directory..." id="path-btn">
             </div>
             <div class="input name-input mb-4">
                 <input class="bg-primary border border-black text-black py-2 rounded-twenty w-7/12 focus:outline-none text-center placeholder-black" type="text" id="name" placeholder="enter project name...">
@@ -44,6 +44,22 @@
             <input type="submit" class="bg-secondary px-6 py-8 text-tertiary text-2xl rounded-twenty font-medium mt-4 focus:outline-none cursor-pointer" value="create">
         </form>
     </div>
+    <div class="hidden bg-primary w-4/5 h-56 ml-12" id="ask-tab">
+        <p>The .env file already exists, want you overwrite it?</p>
+        <div class="flex align-middle justify-around mt-5">
+            <button class="bg-secondary focus:outline-none rounded-twenty p-4" id="yes-btn">
+                <svg width="28" height="23" viewBox="0 0 28 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M27 1L7 21.02L1 15.02" stroke="#CD6161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>                        
+            </button>
+            <button class="bg-secondary focus:outline-none rounded-twenty p-4" id="cancel-btn">
+                <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M27.924 1.28403L1.92395 27.284" stroke="#CD6161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1.92395 1.28403L27.924 27.284" stroke="#CD6161" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
     <div class="hidden" id="settings-tab">
         <form id="form-settings">
             <div class="input path-input mb-4">
@@ -61,8 +77,8 @@
             </button>
         </form>
     </div>  
-    <div class="hidden" id="info-tab">
-        <p>The project was setted up in {direcory}</p>
+    <div class="hidden max-w-full" id="info-tab">
+        <p class="h-40 text-xl bg-secondary text-primary absolute bottom-0 w-full px-2" id="info-text"></p>
     </div>
     <script src="js/renderer.js"></script>
     <script src="js/settings.js"></script>
