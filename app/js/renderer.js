@@ -181,6 +181,20 @@ form.addEventListener('submit', (e) => {
             const folders = [srcFolder, assestFolder, iconsFolder]
             makeFolders(folders)
         }
+        else if (projectType === 'react-app') {
+            const createReactAppCommand = `npx create-react-app ${projectName}`
+
+            exec(`${cdCommand} && ${getToDirCommand} && ${createReactAppCommand}`, (err, stdout, stderr) => {
+                if (err) {
+                    console.log(err.message)
+                }
+                if (stderr) {
+                    console.log(stderr)
+                    return
+                }
+                console.log(stdout)
+            })
+        }
     }
 
     // run all functions without git repo
@@ -195,7 +209,9 @@ form.addEventListener('submit', (e) => {
         showTab(infoTab)	
         infoText.innerHTML = `creating ${projectType} in ${projectPath}`	
         setTimeout(hideInfoTab, 4000)
-        npmInit()
+        if (projectType !== 'react-app') {
+            npmInit()
+        }
         makeFolderStructure()
         openVSCode()
     }
@@ -207,7 +223,9 @@ form.addEventListener('submit', (e) => {
         setTimeout(hideInfoTab, 4000)
         createRepository()
         setTimeout(getRepository, 1800)
-        setTimeout(npmInit, 1900)
+        if (projectType !== 'react-app') {
+            setTimeout(npmInit, 1900)
+        }
         setTimeout(makeFolderStructure, 1900)
         setTimeout(openVSCode, 2000)
     }
